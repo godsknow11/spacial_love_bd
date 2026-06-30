@@ -271,7 +271,7 @@
             pointer-events: none;
         }
 
-        /* --- CANDLE & CAKE WIDGET (MINIMAL CSS CAKE) --- */
+        /* --- CAKE WIDGET (IMAGE-BASED) --- */
         .candle-container {
             display: none;
             flex-direction: column;
@@ -286,87 +286,32 @@
             font-size: 1.15rem;
             font-style: italic;
             color: var(--text-charcoal);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .cake-display {
-            position: relative;
-            width: 120px;
-            height: 90px;
+            width: 140px;
+            height: 140px;
             display: flex;
             justify-content: center;
-            align-items: flex-end;
-            margin-bottom: 10px;
+            align-items: center;
+            border-radius: 50%;
+            background: #faf4ee;
+            border: 1px solid var(--border-light);
+            padding: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+            transition: transform 0.3s ease;
         }
 
-        .cake-body {
-            width: 100px;
-            height: 45px;
-            background: #faf4ee; /* Soft off-white */
-            border: 2px solid var(--rose-gold);
-            border-radius: 8px 8px 4px 4px;
-            position: relative;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        .cake-display:hover {
+            transform: scale(1.05);
         }
 
-        /* Dripping cream layer */
-        .cake-dripping {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .cake-img {
             width: 100%;
-            height: 10px;
-            background: var(--rose-gold);
-            border-radius: 6px 6px 0 0;
-        }
-        
-        /* Add visual cream drops */
-        .cake-dripping::before {
-            content: '';
-            position: absolute;
-            top: 6px;
-            left: 10%;
-            width: 8px;
-            height: 10px;
-            background: var(--rose-gold);
-            border-radius: 0 0 4px 4px;
-            box-shadow: 20px 2px 0 var(--rose-gold), 40px -1px 0 var(--rose-gold), 60px 3px 0 var(--rose-gold), 75px 1px 0 var(--rose-gold);
-        }
-
-        .candle {
-            width: 8px;
-            height: 30px;
-            background: linear-gradient(to top, #ffd166, #ff7096);
-            position: absolute;
-            bottom: 45px; /* Sits on top of the cake body */
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 2px;
-        }
-
-        .flame {
-            width: 8px;
-            height: 14px;
-            background: radial-gradient(circle at bottom, #ffbe0b 20%, #fb5607 60%, rgba(251, 86, 7, 0) 100%);
-            border-radius: 50% 50% 20% 20%;
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 0 8px #ffbe0b, 0 0 16px #fb5607;
-            animation: flicker 0.15s infinite alternate;
-            transition: opacity 0.5s, transform 0.5s;
-        }
-
-        @keyframes flicker {
-            0% { transform: translateX(-50%) scale(0.95) rotate(-1deg); }
-            100% { transform: translateX(-50%) scale(1.05) rotate(1deg); }
-        }
-
-        .flame.blown {
-            opacity: 0;
-            transform: translateX(-50%) translateY(-8px) scale(0);
-            pointer-events: none;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
         }
 
         .candle-hint {
@@ -409,18 +354,13 @@
             <!-- Story Text Caption -->
             <p id="polaroid-caption" class="polaroid-caption"></p>
 
-            <!-- Birthday Candle Widget with Minimalist Cake -->
+            <!-- Birthday Cake Image-based Widget -->
             <div id="candle-stage" class="candle-container" onclick="blowCandle()">
                 <h4 class="candle-title">เป่าเค้กวันเกิดตรงนี้อธิษฐานนะคนเก่ง 🎂</h4>
                 <div class="cake-display">
-                    <div class="cake-body">
-                        <div class="cake-dripping"></div>
-                    </div>
-                    <div class="candle">
-                        <div id="candle-flame" class="flame"></div>
-                    </div>
+                    <img id="cake-img" class="cake-img" src="assets/cake_lit.png" alt="Birthday Cake">
                 </div>
-                <p id="candle-hint" class="candle-hint">แตะเปลวไฟเพื่อเป่าเทียนอธิษฐานกันนะ</p>
+                <p id="candle-hint" class="candle-hint">แตะเพื่อเป่าเทียนอธิษฐานกันนะ</p>
             </div>
         </div>
 
@@ -710,9 +650,10 @@
         // Blow out candle
         function blowCandle() {
             if (candleBlown) return;
-            const flame = document.getElementById('candle-flame');
-            flame.classList.add('blown');
             candleBlown = true;
+            
+            // Swap image to blown version
+            document.getElementById('cake-img').src = 'assets/cake_blown.png';
             document.getElementById('candle-hint').innerText = "คำอธิษฐานส่งถึงดวงดาวแล้วนะ 💖";
             
             // Play sweet chimes
