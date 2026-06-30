@@ -271,7 +271,7 @@
             pointer-events: none;
         }
 
-        /* --- CANDLE WIDGET (MINIMAL CSS CANDLE) --- */
+        /* --- CANDLE & CAKE WIDGET (MINIMAL CSS CAKE) --- */
         .candle-container {
             display: none;
             flex-direction: column;
@@ -289,24 +289,71 @@
             margin-bottom: 20px;
         }
 
-        .candle {
-            width: 12px;
-            height: 45px;
-            background: linear-gradient(to right, #ffd166, #ff7096);
-            border-radius: 3px 3px 0 0;
+        .cake-display {
             position: relative;
+            width: 120px;
+            height: 90px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            margin-bottom: 10px;
+        }
+
+        .cake-body {
+            width: 100px;
+            height: 45px;
+            background: #faf4ee; /* Soft off-white */
+            border: 2px solid var(--rose-gold);
+            border-radius: 8px 8px 4px 4px;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+
+        /* Dripping cream layer */
+        .cake-dripping {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: var(--rose-gold);
+            border-radius: 6px 6px 0 0;
+        }
+        
+        /* Add visual cream drops */
+        .cake-dripping::before {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 10%;
+            width: 8px;
+            height: 10px;
+            background: var(--rose-gold);
+            border-radius: 0 0 4px 4px;
+            box-shadow: 20px 2px 0 var(--rose-gold), 40px -1px 0 var(--rose-gold), 60px 3px 0 var(--rose-gold), 75px 1px 0 var(--rose-gold);
+        }
+
+        .candle {
+            width: 8px;
+            height: 30px;
+            background: linear-gradient(to top, #ffd166, #ff7096);
+            position: absolute;
+            bottom: 45px; /* Sits on top of the cake body */
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
         }
 
         .flame {
-            width: 12px;
-            height: 18px;
+            width: 8px;
+            height: 14px;
             background: radial-gradient(circle at bottom, #ffbe0b 20%, #fb5607 60%, rgba(251, 86, 7, 0) 100%);
             border-radius: 50% 50% 20% 20%;
             position: absolute;
-            top: -20px;
+            top: -15px;
             left: 50%;
             transform: translateX(-50%);
-            box-shadow: 0 0 10px #ffbe0b, 0 0 20px #fb5607;
+            box-shadow: 0 0 8px #ffbe0b, 0 0 16px #fb5607;
             animation: flicker 0.15s infinite alternate;
             transition: opacity 0.5s, transform 0.5s;
         }
@@ -318,7 +365,7 @@
 
         .flame.blown {
             opacity: 0;
-            transform: translateX(-50%) translateY(-10px) scale(0);
+            transform: translateX(-50%) translateY(-8px) scale(0);
             pointer-events: none;
         }
 
@@ -362,11 +409,16 @@
             <!-- Story Text Caption -->
             <p id="polaroid-caption" class="polaroid-caption"></p>
 
-            <!-- Birthday Candle Widget -->
+            <!-- Birthday Candle Widget with Minimalist Cake -->
             <div id="candle-stage" class="candle-container" onclick="blowCandle()">
                 <h4 class="candle-title">เป่าเค้กวันเกิดตรงนี้อธิษฐานนะคนเก่ง 🎂</h4>
-                <div class="candle">
-                    <div id="candle-flame" class="flame"></div>
+                <div class="cake-display">
+                    <div class="cake-body">
+                        <div class="cake-dripping"></div>
+                    </div>
+                    <div class="candle">
+                        <div id="candle-flame" class="flame"></div>
+                    </div>
                 </div>
                 <p id="candle-hint" class="candle-hint">แตะเปลวไฟเพื่อเป่าเทียนอธิษฐานกันนะ</p>
             </div>
