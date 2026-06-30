@@ -572,14 +572,16 @@
             cover.style.transform = 'scale(0.95)';
             setTimeout(() => {
                 cover.style.display = 'none';
+                initBackgroundHearts();
                 initDeck();
             }, 800);
         }
 
-        // --- CONFETTI CANVAS PARTICLE SYSTEM ---
+        // --- CANVAS PARTICLE SYSTEM (HEARTS & CONFETTI) ---
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
+        let bgHearts = [];
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -587,6 +589,54 @@
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
+
+        class HeartParticle {
+            constructor(isInit = false) {
+                this.x = Math.random() * canvas.width;
+                this.y = isInit ? Math.random() * canvas.height : canvas.height + 20;
+                this.size = Math.random() * 8 + 6;
+                this.speedX = Math.random() * 0.4 - 0.2;
+                this.speedY = -(Math.random() * 0.4 + 0.3); // Drifts upward slowly
+                this.opacity = Math.random() * 0.12 + 0.04; // Very soft, warm glow
+                this.angle = Math.random() * Math.PI * 2;
+                this.oscSpeed = Math.random() * 0.015 + 0.005;
+            }
+
+            update() {
+                this.y += this.speedY;
+                this.angle += this.oscSpeed;
+                this.x += this.speedX + Math.sin(this.angle) * 0.15;
+
+                // Reset to bottom if goes off screen
+                if (this.y < -20) {
+                    this.y = canvas.height + 20;
+                    this.x = Math.random() * canvas.width;
+                    this.opacity = Math.random() * 0.12 + 0.04;
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = '#ff7096'; // Romantic rose pink
+
+                // Draw heart shape
+                ctx.beginPath();
+                const x = this.x;
+                const y = this.y;
+                const size = this.size;
+                ctx.moveTo(x, y + size / 4);
+                ctx.quadraticCurveTo(x, y, x - size / 2, y);
+                ctx.quadraticCurveTo(x - size, y, x - size, y + size / 2);
+                ctx.quadraticCurveTo(x - size, y + size, x, y + size * 1.4);
+                ctx.quadraticCurveTo(x + size, y + size, x + size, y + size / 2);
+                ctx.quadraticCurveTo(x + size, y, x + size / 2, y);
+                ctx.quadraticCurveTo(x, y, x, y + size / 4);
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
+        }
 
         class ConfettiParticle {
             constructor(x, y) {
@@ -622,12 +672,29 @@
             }
         }
 
+        function initBackgroundHearts() {
+            bgHearts = [];
+            // Generate 25 heart particles distributed on screen
+            for (let i = 0; i < 25; i++) {
+                bgHearts.push(new HeartParticle(true));
+            }
+        }
+
         function animateParticles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw background heart drift
+            bgHearts.forEach(h => {
+                h.update();
+                h.draw();
+            });
+
+            // Draw foreground confetti
             particles.forEach(p => {
                 p.update();
                 p.draw();
             });
+            
             requestAnimationFrame(animateParticles);
         }
         animateParticles();
