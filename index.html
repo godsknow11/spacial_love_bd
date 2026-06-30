@@ -259,9 +259,79 @@
             background-color: var(--rose-gold);
             box-shadow: 0 0 8px var(--rose-gold);
         }
+
+        /* --- FLOATING PARTICLES CANVAS --- */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* --- CANDLE WIDGET (MINIMAL CSS CANDLE) --- */
+        .candle-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 15px;
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        .candle-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            font-style: italic;
+            color: var(--text-charcoal);
+            margin-bottom: 20px;
+        }
+
+        .candle {
+            width: 12px;
+            height: 45px;
+            background: linear-gradient(to right, #ffd166, #ff7096);
+            border-radius: 3px 3px 0 0;
+            position: relative;
+        }
+
+        .flame {
+            width: 12px;
+            height: 18px;
+            background: radial-gradient(circle at bottom, #ffbe0b 20%, #fb5607 60%, rgba(251, 86, 7, 0) 100%);
+            border-radius: 50% 50% 20% 20%;
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px #ffbe0b, 0 0 20px #fb5607;
+            animation: flicker 0.15s infinite alternate;
+            transition: opacity 0.5s, transform 0.5s;
+        }
+
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(0.95) rotate(-1deg); }
+            100% { transform: translateX(-50%) scale(1.05) rotate(1deg); }
+        }
+
+        .flame.blown {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-10px) scale(0);
+            pointer-events: none;
+        }
+
+        .candle-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 12px;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
+    <canvas id="particles-canvas"></canvas>
     <div id="cover-screen" onclick="startExperience()">
         <div class="envelope-card">
             <div class="envelope-icon">💌</div>
@@ -291,6 +361,15 @@
 
             <!-- Story Text Caption -->
             <p id="polaroid-caption" class="polaroid-caption"></p>
+
+            <!-- Birthday Candle Widget -->
+            <div id="candle-stage" class="candle-container" onclick="blowCandle()">
+                <h4 class="candle-title">เป่าเค้กวันเกิดตรงนี้อธิษฐานนะคนเก่ง 🎂</h4>
+                <div class="candle">
+                    <div id="candle-flame" class="flame"></div>
+                </div>
+                <p id="candle-hint" class="candle-hint">แตะเปลวไฟเพื่อเป่าเทียนอธิษฐานกันนะ</p>
+            </div>
         </div>
 
         <!-- Left/Right Nav Arrows -->
@@ -302,20 +381,26 @@
     </div>
     <script>
         let audioCtx = null;
+        let candleBlown = false;
 
-        // Temporary Sound Chime Synth
+        // Web Audio API Chime Synth
         function playChime(freq, duration) {
             try {
                 if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 if (audioCtx.state === 'suspended') audioCtx.resume();
+
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
+
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+
+                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
+
                 osc.start();
                 osc.stop(audioCtx.currentTime + duration);
             } catch (e) {}
@@ -368,7 +453,6 @@
             const chapter = storyChapters[currentSlide];
             const polaroid = document.querySelector('.polaroid-card');
             
-            // Apply slight random tilt/rotation for physical look
             const rot = (currentSlide % 2 === 0 ? -1.5 : 1.5) + (Math.random() * 0.4 - 0.2);
             polaroid.style.transform = `rotate(${rot}deg) translateY(-5px)`;
             polaroid.style.opacity = '0.3';
@@ -388,6 +472,14 @@
                 } else {
                     imgEl.style.display = 'none';
                     placeholderEl.style.display = 'flex';
+                }
+
+                // Show candle only on final slide
+                const candleStage = document.getElementById('candle-stage');
+                if (currentSlide === storyChapters.length - 1) {
+                    candleStage.style.display = 'flex';
+                } else {
+                    candleStage.style.display = 'none';
                 }
 
                 // Update dots
@@ -430,6 +522,87 @@
                 cover.style.display = 'none';
                 initDeck();
             }, 800);
+        }
+
+        // --- CONFETTI CANVAS PARTICLE SYSTEM ---
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class ConfettiParticle {
+            constructor(x, y) {
+                this.x = x || Math.random() * canvas.width;
+                this.y = y || -20;
+                this.size = Math.random() * 6 + 4;
+                this.color = ['#ff7096', '#ffbe0b', '#1db954', '#d4b2a7', '#ffffff'][Math.floor(Math.random() * 5)];
+                this.speedX = Math.random() * 4 - 2;
+                this.speedY = Math.random() * 3 + 2;
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = Math.random() * 10 - 5;
+                this.opacity = 1;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.rotation += this.rotationSpeed;
+                if (this.y > canvas.height) {
+                    const idx = particles.indexOf(this);
+                    if (idx > -1) particles.splice(idx, 1);
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation * Math.PI / 180);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.opacity;
+                ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+                ctx.restore();
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        function triggerConfetti() {
+            for (let i = 0; i < 80; i++) {
+                setTimeout(() => {
+                    particles.push(new ConfettiParticle(canvas.width / 2, canvas.height * 0.4));
+                }, i * 15);
+            }
+        }
+
+        // Blow out candle
+        function blowCandle() {
+            if (candleBlown) return;
+            const flame = document.getElementById('candle-flame');
+            flame.classList.add('blown');
+            candleBlown = true;
+            document.getElementById('candle-hint').innerText = "คำอธิษฐานส่งถึงดวงดาวแล้วนะ 💖";
+            
+            // Play sweet chimes
+            playChime(523.25, 0.2); // C5
+            setTimeout(() => playChime(659.25, 0.2), 100); // E5
+            setTimeout(() => playChime(783.99, 0.3), 200); // G5
+            setTimeout(() => playChime(1046.50, 0.4), 300); // C6
+
+            triggerConfetti();
         }
     </script>
 </body>
