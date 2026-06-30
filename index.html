@@ -114,6 +114,151 @@
         .envelope-btn:hover {
             opacity: 0.9;
         }
+
+        /* --- STAGE CONTAINER & POLAROID CARD --- */
+        .stage-container {
+            max-width: 480px;
+            width: 90%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .polaroid-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            padding: 20px;
+            padding-bottom: 35px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.03);
+            border-radius: 12px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            transform: rotate(-1deg);
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+        }
+
+        .polaroid-photo-frame {
+            background: #faf9f6;
+            border: 1px dashed var(--rose-gold);
+            aspect-ratio: 1 / 1;
+            width: 100%;
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .photo-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .photo-placeholder-icon {
+            font-size: 2rem;
+            opacity: 0.6;
+        }
+
+        .polaroid-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .polaroid-meta {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+
+        .chapter-title {
+            font-size: 1.1rem;
+            color: var(--text-charcoal);
+            font-weight: 600;
+        }
+
+        .chapter-date {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .polaroid-caption {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: var(--text-charcoal);
+            min-height: 120px;
+            white-space: pre-line;
+        }
+
+        /* --- NAVIGATION ARROWS --- */
+        .nav-arrow {
+            position: absolute;
+            top: 40%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: var(--text-charcoal);
+            cursor: pointer;
+            padding: 10px;
+            transition: transform 0.2s, opacity 0.2s;
+            opacity: 0.5;
+            z-index: 20;
+            user-select: none;
+        }
+
+        .nav-arrow:hover {
+            opacity: 1;
+            transform: translateY(-50%) scale(1.2);
+        }
+
+        #prev-btn {
+            left: -65px;
+        }
+
+        #next-btn {
+            right: -65px;
+        }
+
+        @media (max-width: 620px) {
+            #prev-btn { left: -15px; background: rgba(255,255,255,0.8); border-radius: 50%; width: 42px; height: 42px; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+            #next-btn { right: -15px; background: rgba(255,255,255,0.8); border-radius: 50%; width: 42px; height: 42px; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        }
+
+        /* --- PROGRESS DOTS --- */
+        .progress-dots {
+            display: flex;
+            gap: 8px;
+            margin-top: 25px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--border-light);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .dot.active {
+            background-color: var(--rose-gold);
+            box-shadow: 0 0 8px var(--rose-gold);
+        }
     </style>
 </head>
 <body>
@@ -125,14 +270,165 @@
             <button class="envelope-btn">เปิดอ่านการ์ด ✨</button>
         </div>
     </div>
-    
+
+    <!-- POLAROID STORY STAGE -->
+    <div class="stage-container">
+        <div class="polaroid-card">
+            <!-- Polaroid Photo Frame -->
+            <div class="polaroid-photo-frame">
+                <div class="photo-placeholder">
+                    <span class="photo-placeholder-icon">📸</span>
+                    <span class="photo-placeholder-text">[ วางรูปภาพคู่ของเราตรงนี้ ]</span>
+                </div>
+                <img id="polaroid-img" class="polaroid-img" src="" alt="Our Memory" style="display: none;">
+            </div>
+            
+            <!-- Date & Title Meta -->
+            <div class="polaroid-meta">
+                <span id="chapter-title" class="chapter-title">Chapter 01</span>
+                <span id="chapter-date" class="chapter-date">Our Journey</span>
+            </div>
+
+            <!-- Story Text Caption -->
+            <p id="polaroid-caption" class="polaroid-caption"></p>
+        </div>
+
+        <!-- Left/Right Nav Arrows -->
+        <button id="prev-btn" class="nav-arrow" onclick="prevSlide()" title="ย้อนกลับ">←</button>
+        <button id="next-btn" class="nav-arrow" onclick="nextSlide()" title="ถัดไป">→</button>
+
+        <!-- Progress Dots Indicator -->
+        <div id="progress-dots" class="progress-dots"></div>
+    </div>
     <script>
+        let audioCtx = null;
+
+        // Temporary Sound Chime Synth
+        function playChime(freq, duration) {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {}
+        }
+
+        const storyChapters = [
+            {
+                chapter: "Chapter 01",
+                date: "Our Journey",
+                text: "ปีนี้เป็นปีที่เราสองคนผ่านเรื่องราวอะไรด้วยกันมาเยอะมากจริงๆ มีทั้งรอยยิ้มและเรื่องราวต่างๆ แต่สุดท้ายเราก็ผ่านมาด้วยกันได้",
+                image: "assets/stormy_umbrella.png"
+            },
+            {
+                chapter: "Chapter 02",
+                date: "Health & Care",
+                text: "ปีนี้เห็นเธอป่วยบ่อย เค้าเป็นห่วงมากๆ เลยนะ ไม่อยากเห็นเธอป่วยเลย อยากให้เธอแข็งแรงและอยู่กับเค้าไปนานๆ ไม่ว่าวันข้างหน้าจะเป็นยังไง ขอให้รู้ไว้ว่าเค้าจะคอยอยู่ข้างๆ เธอเสมอ",
+                image: "assets/cozy_together.png"
+            },
+            {
+                chapter: "Chapter 03",
+                date: "Our Promise",
+                text: "และปีนี้... คำสัญญาของเราเป็นจริงแล้วนะ ที่เค้าได้ไปหมั้นเธอ ดีใจหรือเปล่า? เป้าหมายต่อไปของเราคือ 'งานแต่งงาน' (แล้วก็พากันกินให้อ้วน 555 แหย่เล่นน้า) เค้าคิดถึงเป้าหมายนี้ทุกวันเลย อยากแต่งงานกับเธอเร็วๆ จัง สงสัยต้องรีบลุยหาเงินมาแต่งซะแล้วสิ",
+                image: "assets/starry_future.png"
+            },
+            {
+                chapter: "Chapter 04",
+                date: "Together Forever",
+                text: "เนื่องในวันเกิดอายุครบ 26 ปีบริบูรณ์ของเธอ เค้าขอให้ที่รักสุขภาพร่างกายแข็งแรง ไม่เจ็บไม่ป่วย หันมาดูแลตัวเองและออกกำลังกายเยอะๆ นะ ถ้ามีเรื่องอะไรไม่สบายใจ หันมาบอกเค้าได้ทุกเรื่องเลย เค้าพร้อมจะอยู่ตรงนี้ เป็นที่พักพิงให้เธอได้บ่นตลอดไปเลยนะ เรามาพยายามสร้างครอบครัวและอนาคตไปด้วยกันนะ",
+                image: ""
+            }
+        ];
+
+        let currentSlide = 0;
+
+        function initDeck() {
+            // Setup dots
+            const dotsContainer = document.getElementById('progress-dots');
+            dotsContainer.innerHTML = '';
+            storyChapters.forEach((_, idx) => {
+                const dot = document.createElement('div');
+                dot.className = `dot ${idx === 0 ? 'active' : ''}`;
+                dot.onclick = () => goToSlide(idx);
+                dotsContainer.appendChild(dot);
+            });
+
+            updateSlideUI();
+        }
+
+        function updateSlideUI() {
+            const chapter = storyChapters[currentSlide];
+            const polaroid = document.querySelector('.polaroid-card');
+            
+            // Apply slight random tilt/rotation for physical look
+            const rot = (currentSlide % 2 === 0 ? -1.5 : 1.5) + (Math.random() * 0.4 - 0.2);
+            polaroid.style.transform = `rotate(${rot}deg) translateY(-5px)`;
+            polaroid.style.opacity = '0.3';
+            
+            setTimeout(() => {
+                document.getElementById('chapter-title').innerText = chapter.chapter;
+                document.getElementById('chapter-date').innerText = chapter.date;
+                document.getElementById('polaroid-caption').innerText = chapter.text;
+
+                const imgEl = document.getElementById('polaroid-img');
+                const placeholderEl = document.querySelector('.photo-placeholder');
+
+                if (chapter.image) {
+                    imgEl.src = chapter.image;
+                    imgEl.style.display = 'block';
+                    placeholderEl.style.display = 'none';
+                } else {
+                    imgEl.style.display = 'none';
+                    placeholderEl.style.display = 'flex';
+                }
+
+                // Update dots
+                document.querySelectorAll('.dot').forEach((d, idx) => {
+                    d.className = `dot ${idx === currentSlide ? 'active' : ''}`;
+                });
+
+                polaroid.style.opacity = '1';
+                polaroid.style.transform = `rotate(${rot}deg) translateY(0)`;
+            }, 250);
+        }
+
+        function nextSlide() {
+            if (currentSlide < storyChapters.length - 1) {
+                currentSlide++;
+                updateSlideUI();
+                playChime(600 + currentSlide * 50, 0.08);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlideUI();
+                playChime(600 + currentSlide * 50, 0.08);
+            }
+        }
+
+        function goToSlide(idx) {
+            currentSlide = idx;
+            updateSlideUI();
+            playChime(600 + currentSlide * 50, 0.08);
+        }
+
         function startExperience() {
             const cover = document.getElementById('cover-screen');
             cover.style.opacity = '0';
             cover.style.transform = 'scale(0.95)';
             setTimeout(() => {
                 cover.style.display = 'none';
+                initDeck();
             }, 800);
         }
     </script>
