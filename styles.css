@@ -34,7 +34,7 @@ body {
     overflow: hidden;
     /* Fix iOS/Mobile Safari viewport bug */
     height: 100vh;
-    min-height: 100dvh; 
+    min-height: 100dvh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -64,7 +64,7 @@ body {
     padding: 40px 24px;
     text-align: center;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-    max-width: 380px;
+    max-width: 410px;
     width: 88%;
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -76,25 +76,32 @@ body {
 }
 
 .envelope-icon {
-    font-size: 3rem;
-    margin-bottom: 16px;
+    font-size: 5rem;
+    margin-bottom: 6px;
     display: inline-block;
     animation: heartFloat 3s ease-in-out infinite;
 }
 
 @keyframes heartFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
 }
 
 .envelope-title {
-    font-size: 2.3rem;
+    font-size: 3rem;
     font-weight: 600;
 }
 
 .envelope-recipient {
     font-family: 'Maaja', sans-serif;
-    font-size: 1.5rem;
+    font-size: 1.95rem;
     color: var(--rose-gold);
     margin-bottom: 14px;
     display: block;
@@ -102,14 +109,14 @@ body {
 
 .envelope-subtitle {
     color: var(--text-muted);
-    font-size: 1.08rem;
+    font-size: 1.4rem;
     font-weight: 300;
     margin-bottom: 8px;
 }
 
 .envelope-date {
     color: var(--text-muted);
-    font-size: 0.98rem;
+    font-size: 1.28rem;
     font-weight: 300;
     margin-bottom: 24px;
     opacity: 0.8;
@@ -121,7 +128,7 @@ body {
     border: none;
     padding: 12px 28px;
     border-radius: 25px;
-    font-size: 1.08rem;
+    font-size: 1.4rem;
     font-weight: 500;
     cursor: pointer;
     transition: opacity 0.2s;
@@ -158,6 +165,12 @@ body {
     overflow: hidden;
     max-height: 80vh;
     max-height: 80dvh;
+    /* Anti-blur fixes for transitions and rotates */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    will-change: transform;
 }
 
 .polaroid-photo-frame {
@@ -173,7 +186,7 @@ body {
     margin-bottom: 16px;
     /* Dynamic sizing for phone screens */
     aspect-ratio: 1 / 1;
-    max-height: 32vh; 
+    max-height: 32vh;
     max-height: 32dvh;
 }
 
@@ -204,19 +217,22 @@ body {
     background-color: #f8f6f3;
 }
 
-/* Safe Content Wrapper with scrolling fallback */
 .polaroid-content-scroll {
     overflow-y: auto;
     padding-right: 4px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    -webkit-overflow-scrolling: touch;
+    will-change: scroll-position;
+    transform: translate3d(0, 0, 0);
 }
 
 /* Hide scrollbars but preserve functionality */
 .polaroid-content-scroll::-webkit-scrollbar {
     width: 3px;
 }
+
 .polaroid-content-scroll::-webkit-scrollbar-thumb {
     background-color: var(--rose-gold-soft);
     border-radius: 4px;
@@ -234,26 +250,27 @@ body {
 }
 
 .chapter-title {
-    font-size: 1rem;
+    font-size: 1.3rem;
     color: var(--text-charcoal);
     font-weight: 600;
 }
 
 .chapter-date {
-    font-size: 0.85rem;
+    font-size: 1.1rem;
     color: var(--text-muted);
 }
 
 .polaroid-caption {
-    font-size: 1rem;
+    font-size: 1.3rem;
     line-height: 1.8;
     color: var(--text-charcoal);
     white-space: pre-line;
     margin-bottom: 8px;
+    transform: translate3d(0, 0, 0);
 }
 
 .type-hint {
-    font-size: 0.68rem;
+    font-size: 0.9rem;
     color: var(--text-muted);
     margin-top: 4px;
     opacity: 0.55;
@@ -269,18 +286,23 @@ body {
 }
 
 @keyframes glowIn {
-    from { background-size: 0% 100%; }
-    to   { background-size: 100% 100%; }
+    from {
+        background-size: 0% 100%;
+    }
+
+    to {
+        background-size: 100% 100%;
+    }
 }
 
 /* --- POST-BLOW FINALE MESSAGE --- */
 .finale-message {
     margin-top: 12px;
     padding: 12px 14px;
-    background: linear-gradient(135deg, rgba(212,178,167,0.10), rgba(212,178,167,0.03));
+    background: linear-gradient(135deg, rgba(212, 178, 167, 0.10), rgba(212, 178, 167, 0.03));
     border-left: 3px solid var(--rose-gold);
     border-radius: 6px;
-    font-size: 0.98rem;
+    font-size: 1.28rem;
     line-height: 1.7;
     color: var(--text-charcoal);
     display: none;
@@ -291,14 +313,15 @@ body {
 
 .finale-desc {
     margin-top: 6px;
-    font-size: 1rem;
+    font-size: 1.3rem;
 }
 
 .finale-footer {
     margin-top: 8px;
     font-style: italic;
-    font-size: 1.15rem;
-    font-weight: 600;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
     color: var(--rose-gold);
 }
 
@@ -311,7 +334,7 @@ body {
 .finale-replay {
     display: inline-block;
     margin-top: 8px;
-    font-size: 0.82rem;
+    font-size: 1.05rem;
     color: var(--rose-gold);
     cursor: pointer;
     text-decoration: underline;
@@ -334,7 +357,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
     transition: transform 0.2s, opacity 0.2s;
     z-index: 20;
     user-select: none;
@@ -344,8 +367,13 @@ body {
     transform: translateY(-50%) scale(1.1);
 }
 
-#prev-btn { left: -18px; }
-#next-btn { right: -18px; }
+#prev-btn {
+    left: -18px;
+}
+
+#next-btn {
+    right: -18px;
+}
 
 /* --- PROGRESS DOTS --- */
 .progress-dots {
@@ -392,7 +420,7 @@ body {
 
 .candle-title {
     font-family: 'Maaja', sans-serif;
-    font-size: 1rem;
+    font-size: 1.3rem;
     color: var(--text-charcoal);
     margin-bottom: 10px;
     text-align: center;
@@ -423,7 +451,7 @@ body {
 }
 
 .candle-hint {
-    font-size: 0.75rem;
+    font-size: 1rem;
     color: var(--text-muted);
     margin-top: 8px;
 }
