@@ -1,0 +1,425 @@
+/* --- LOCAL FONT FACE DEFINITION --- */
+@font-face {
+    font-family: 'Maaja';
+    src: url('assets/fonts/maaja%20ver%201.00.ttf') format('truetype');
+    src: url('assets/fonts/maaja%20ver%201.00.otf') format('opentype');
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    --bg-cream: #fcfaf6;
+    --text-charcoal: #2a2927;
+    --text-muted: #7a7772;
+    --rose-gold: #d4b2a7;
+    --rose-gold-soft: #e8d3cb;
+    --rose-gold-glow: rgba(212, 178, 167, 0.4);
+    --card-bg: #ffffff;
+    --border-light: rgba(42, 41, 39, 0.08);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Maaja', 'Playpen Sans Thai', 'Noto Sans Thai', 'Segoe UI', sans-serif;
+    font-size: 20px;
+    line-height: 1.7;
+    background-color: var(--bg-cream);
+    color: var(--text-charcoal);
+    overflow: hidden;
+    /* Fix iOS/Mobile Safari viewport bug */
+    height: 100vh;
+    min-height: 100dvh; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+/* --- COVER SCREEN (ENVELOPE INTRO) --- */
+#cover-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    background-color: var(--bg-cream);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.envelope-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: 40px 24px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    max-width: 380px;
+    width: 88%;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.envelope-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(212, 178, 167, 0.2);
+}
+
+.envelope-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    display: inline-block;
+    animation: heartFloat 3s ease-in-out infinite;
+}
+
+@keyframes heartFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.envelope-title {
+    font-size: 2.3rem;
+    font-weight: 600;
+}
+
+.envelope-recipient {
+    font-family: 'Maaja', sans-serif;
+    font-size: 1.5rem;
+    color: var(--rose-gold);
+    margin-bottom: 14px;
+    display: block;
+}
+
+.envelope-subtitle {
+    color: var(--text-muted);
+    font-size: 1.08rem;
+    font-weight: 300;
+    margin-bottom: 8px;
+}
+
+.envelope-date {
+    color: var(--text-muted);
+    font-size: 0.98rem;
+    font-weight: 300;
+    margin-bottom: 24px;
+    opacity: 0.8;
+}
+
+.envelope-btn {
+    background: var(--text-charcoal);
+    color: var(--bg-cream);
+    border: none;
+    padding: 12px 28px;
+    border-radius: 25px;
+    font-size: 1.08rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    font-family: 'Maaja', sans-serif;
+}
+
+/* --- STAGE CONTAINER & POLAROID CARD --- */
+.stage-container {
+    max-width: 420px;
+    width: 88%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+    /* Ensure container doesn't overflow viewport */
+    max-height: 92vh;
+    max-height: 92dvh;
+}
+
+.polaroid-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    padding: 16px;
+    padding-bottom: 24px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.03);
+    border-radius: 12px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    transform: rotate(-0.5deg);
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+    /* Allow internal items to shrink smartly */
+    overflow: hidden;
+    max-height: 80vh;
+    max-height: 80dvh;
+}
+
+.polaroid-photo-frame {
+    background: #faf9f6;
+    border: 1px dashed var(--rose-gold);
+    width: 100%;
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin-bottom: 16px;
+    /* Dynamic sizing for phone screens */
+    aspect-ratio: 1 / 1;
+    max-height: 32vh; 
+    max-height: 32dvh;
+}
+
+.photo-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 16px;
+}
+
+.photo-placeholder-icon {
+    font-size: 1.8rem;
+    opacity: 0.6;
+}
+
+.polaroid-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Safe Content Wrapper with scrolling fallback */
+.polaroid-content-scroll {
+    overflow-y: auto;
+    padding-right: 4px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Hide scrollbars but preserve functionality */
+.polaroid-content-scroll::-webkit-scrollbar {
+    width: 3px;
+}
+.polaroid-content-scroll::-webkit-scrollbar-thumb {
+    background-color: var(--rose-gold-soft);
+    border-radius: 4px;
+}
+
+.polaroid-meta {
+    font-family: 'Maaja', sans-serif;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 6px;
+    margin-bottom: 12px;
+    flex-shrink: 0;
+}
+
+.chapter-title {
+    font-size: 1rem;
+    color: var(--text-charcoal);
+    font-weight: 600;
+}
+
+.chapter-date {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.polaroid-caption {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--text-charcoal);
+    white-space: pre-line;
+    margin-bottom: 8px;
+}
+
+.type-hint {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    opacity: 0.55;
+    text-align: right;
+    margin-bottom: 8px;
+}
+
+.callback-glow {
+    background-image: linear-gradient(transparent 70%, var(--rose-gold-soft) 70%);
+    background-size: 100% 100%;
+    padding: 0 2px;
+    animation: glowIn 1.2s ease 0.3s both;
+}
+
+@keyframes glowIn {
+    from { background-size: 0% 100%; }
+    to   { background-size: 100% 100%; }
+}
+
+/* --- POST-BLOW FINALE MESSAGE --- */
+.finale-message {
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, rgba(212,178,167,0.10), rgba(212,178,167,0.03));
+    border-left: 3px solid var(--rose-gold);
+    border-radius: 6px;
+    font-size: 0.98rem;
+    line-height: 1.7;
+    color: var(--text-charcoal);
+    display: none;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.finale-desc {
+    margin-top: 6px;
+    font-size: 1rem;
+}
+
+.finale-footer {
+    margin-top: 8px;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--rose-gold);
+}
+
+.finale-message.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.finale-replay {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 0.82rem;
+    color: var(--rose-gold);
+    cursor: pointer;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+/* --- NAVIGATION ARROWS --- */
+.nav-arrow {
+    position: absolute;
+    top: 35%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--border-light);
+    font-size: 1.6rem;
+    color: var(--text-charcoal);
+    cursor: pointer;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    transition: transform 0.2s, opacity 0.2s;
+    z-index: 20;
+    user-select: none;
+}
+
+.nav-arrow:hover {
+    transform: translateY(-50%) scale(1.1);
+}
+
+#prev-btn { left: -18px; }
+#next-btn { right: -18px; }
+
+/* --- PROGRESS DOTS --- */
+.progress-dots {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    flex-shrink: 0;
+}
+
+.dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: var(--border-light);
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.dot.active {
+    background-color: var(--rose-gold);
+    box-shadow: 0 0 6px var(--rose-gold);
+}
+
+/* --- FLOATING PARTICLES CANVAS --- */
+#particles-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* --- CAKE WIDGET --- */
+.candle-container {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.candle-title {
+    font-family: 'Maaja', sans-serif;
+    font-size: 1rem;
+    color: var(--text-charcoal);
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.cake-display {
+    width: 110px;
+    height: 110px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid var(--rose-gold);
+    padding: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    transition: transform 0.3s ease;
+}
+
+.cake-display:hover {
+    transform: scale(1.05);
+}
+
+.cake-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.candle-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 8px;
+}
