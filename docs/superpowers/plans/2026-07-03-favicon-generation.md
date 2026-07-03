@@ -2,14 +2,14 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Generate a high-quality multi-resolution `favicon.ico` file from `assets/story_collage.png` and link it inside `index.html`.
+**Goal:** Generate a high-quality multi-resolution `favicon.ico` file from `assets/chibi_cats_favicon.png` and link it inside `index.html`.
 
 **Architecture:** A native PowerShell script will be written to load the .NET `System.Drawing` assembly, resize the source PNG image to standard dimensions (16x16, 32x32, 48x48, 64x64), pack them into a standard ICO file format using PNG streams, and save it in the root directory. Finally, `index.html` will be updated to link to this favicon.
 
 **Tech Stack:** PowerShell, .NET `System.Drawing`, HTML5.
 
 ## Global Constraints
-- Input file: [story_collage.png](file:///f:/secret_project/spacial_love_bd/assets/story_collage.png)
+- Input file: [chibi_cats_favicon.png](file:///f:/secret_project/spacial_love_bd/assets/chibi_cats_favicon.png)
 - Output file: `favicon.ico`
 - Target page: [index.html](file:///f:/secret_project/spacial_love_bd/index.html)
 
@@ -21,7 +21,7 @@
 - Create: [generate_favicon.ps1](file:///f:/secret_project/spacial_love_bd/tools/generate_favicon.ps1)
 
 **Interfaces:**
-- Consumes: [story_collage.png](file:///f:/secret_project/spacial_love_bd/assets/story_collage.png)
+- Consumes: [chibi_cats_favicon.png](file:///f:/secret_project/spacial_love_bd/assets/chibi_cats_favicon.png)
 - Produces: `favicon.ico` in the project root directory.
 
 - [ ] **Step 1: Create the generator script**
@@ -31,7 +31,7 @@ Write the script code to [generate_favicon.ps1](file:///f:/secret_project/spacia
 ```powershell
 Add-Type -AssemblyName System.Drawing
 
-$sourcePath = "f:\secret_project\spacial_love_bd\assets\story_collage.png"
+$sourcePath = "f:\secret_project\spacial_love_bd\assets\chibi_cats_favicon.png"
 $outputPath = "f:\secret_project\spacial_love_bd\favicon.ico"
 
 $sizes = @(16, 32, 48, 64)

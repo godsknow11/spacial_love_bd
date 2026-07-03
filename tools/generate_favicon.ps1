@@ -1,6 +1,6 @@
 Add-Type -AssemblyName System.Drawing
 
-$sourcePath = "f:\secret_project\spacial_love_bd\assets\story_collage.png"
+$sourcePath = "f:\secret_project\spacial_love_bd\assets\chibi_cats_favicon.png"
 $outputPath = "f:\secret_project\spacial_love_bd\favicon.ico"
 
 $sizes = @(16, 32, 48, 64)
